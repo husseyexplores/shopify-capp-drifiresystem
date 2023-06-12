@@ -77,7 +77,7 @@ export class ShopifyClient {
     }
   }
 
-  async gql<T = unknown>({
+  async gql<T = unknown, U = unknown>({
     query,
     variables,
   }: {

@@ -15,6 +15,14 @@ const REQUIRED_WEBHOOKS: Parameters<
       format: "JSON",
     },
   },
+  {
+    topic: "FULFILLMENTS_CREATE",
+    input: {
+      pubSubProject: process.env.GCLOUD_PROJECT ?? "drifiresystem-shopify",
+      pubSubTopic: "update_payment_terms",
+      format: "JSON",
+    },
+  },
 ];
 
 export async function handler() {
