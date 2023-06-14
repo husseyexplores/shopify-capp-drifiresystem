@@ -8,9 +8,17 @@ Easy to transfer it to the client once finished developing and comes with most o
 Can be adjusted for other deployment platforms with minor adjustments (logging, env vars).\
 Major adjustments are needed for pubsub and webhook registering.
 
+**Note:** Usually, Shopify Custom Apps have a one-to-one relationship with `store <-> each-app-deployment`
+
+- Each app is deployed specifically for one store.
+- If you need to install the same custom app on another store, you have to redeploy the Firebase project.
+
+But this implementation supports multiple stores with a single deployment.\
+Access tokens are stored in Firestore instead of stored in environment variables.
+
 ## Setup
 
-```bash
+```sh
 # Make sure to install firebase cli
 pnpm add -g firebase-tools
 
@@ -54,7 +62,7 @@ Webhooks are created via code.
 
 1. Goto `functions/src/handlers/registerWebhooks.ts` and add required webhooks in `REQUIRED_WEBHOOKS`
 2. Create the webhook handler in `function/src/index.ts` using `onMessagePublished`. Topic must be the same as `pubSubTopic` entered above in the previous step;
-3. Run deploy command
+3. Run deploy command `firebase deploy --only functions`
 4. Be sure to add `delivery@shopify-pubsub-webhooks.iam.gserviceaccount.com` as Publisher in GCP Pubsub console. It should be done for every topic regeristed.
 
 Documentation to create the webhooks is in `functions/src/handlers/registerWebhooks.ts`
