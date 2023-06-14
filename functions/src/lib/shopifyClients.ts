@@ -1,6 +1,6 @@
 import * as logger from "firebase-functions/logger";
 import { GraphqlError, type GraphqlErrorItem } from "./utils";
-import { shopifyShop, shopifyAccessToken, shopifyApiVersion } from "../env";
+import { shopifyApiVersion } from "../env";
 
 type GraphqlExtension = {
   cost: {
@@ -144,13 +144,25 @@ export class ShopifyClient {
   }
 }
 
-let client: null | ShopifyClient = null;
-export function getClient(): ShopifyClient {
-  if (client) return client;
-  client = new ShopifyClient({
-    shop: shopifyShop.value(),
-    accessToken: shopifyAccessToken.value(),
-    apiVersion: shopifyApiVersion.value(),
-  });
+const clients: Map<string, ShopifyClient> = new Map();
+export function getClient({
+  shop,
+  accessToken,
+  apiVersion,
+}: {
+  shop: string;
+  accessToken: string;
+  apiVersion?: string;
+}): ShopifyClient {
+  const key = `${shop}_${accessToken}`;
+  let client = clients.has(key) ? clients.get(key) : null;
+
+  if (!client) {
+    client = new ShopifyClient({
+      shop,
+      accessToken,
+      apiVersion: apiVersion ?? shopifyApiVersion.value(),
+    });
+  }
   return client;
 }

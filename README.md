@@ -26,6 +26,26 @@ Fill out the `.env` file
 firebase deploy --only functions
 ```
 
+## Install the app
+
+Let's configure Shopify store settings
+
+1. Go to your store backend
+2. Settings > Apps and sales channels
+3. Click `Develop apps` on the top right corner
+4. Click `Create an app`
+5. Select these scopes: `write_draft_orders, read_draft_orders, write_orders, read_orders, write_payment_terms, read_payment_terms, write_fulfillments, read_fulfillments`
+6. Click `Install`
+7. Copy the access token.
+
+Now let's link our backend to this shopify app.
+
+1. Goto to your Firebase dashboard > functions.
+2. Copy the `install` function url
+3. Open it in a new tab.
+4. Enter your shop url and access token that you just copied from the last step, and submit.
+5. Success! You should see a log dump of installed webhooks.
+
 ## Docs and Notes
 
 ### Webhooks

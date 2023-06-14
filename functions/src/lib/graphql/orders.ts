@@ -1,4 +1,4 @@
-import type { PaymentTerms, Order } from "../../types/order";
+import type { PaymentTerms, Order } from "./types/order";
 import { getClient } from "../shopifyClients";
 
 const FRAGMENTS = {
@@ -8,6 +8,7 @@ const FRAGMENTS = {
         id
         name
         tags
+        displayFulfillmentStatus
         fulfillable
         fullyPaid
         paymentTerms {
@@ -43,8 +44,11 @@ const FRAGMENTS = {
 };
 
 export const query = {
-  byId: (input: { variables: { id: string } }) => {
-    return getClient()
+  byId: async (input: {
+    variables: { id: string };
+    auth: { shop: string; accessToken: string };
+  }) => {
+    return getClient(input.auth)
       .gql<{ order: null | Order }>({
         query: /* GraphQL */ `
           query order($id: ID!) {
@@ -72,8 +76,9 @@ export const mutation = {
         };
       };
     };
+    auth: { shop: string; accessToken: string };
   }) => {
-    return getClient()
+    return getClient(input.auth)
       .gql<{
         paymentTermsUpdate: {
           paymentTerms: PaymentTerms | null;

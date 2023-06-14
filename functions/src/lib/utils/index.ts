@@ -1,8 +1,6 @@
 type ClassConstructor<T> = new (...args: any[]) => T;
 
-export function singletonify<T extends ClassConstructor<any>>(
-  jsClass: T
-): T {
+export function singletonify<T extends ClassConstructor<any>>(jsClass: T): T {
   let instance: T | null = null;
 
   return new Proxy(jsClass, {
@@ -21,15 +19,15 @@ export type GraphqlErrorItem = {
 };
 
 export class GraphqlError extends Error {
-  errors?: GraphqlErrorItem[]
+  errors?: GraphqlErrorItem[];
   constructor({
     message,
-    errors
+    errors,
   }: {
-    errors: GraphqlErrorItem[]
-    message?:string
+    errors: GraphqlErrorItem[];
+    message?: string;
   }) {
-    super(message ?? 'GraphQL Error!');
+    super(message ?? "GraphQL Error!");
     this.errors = errors;
   }
 }

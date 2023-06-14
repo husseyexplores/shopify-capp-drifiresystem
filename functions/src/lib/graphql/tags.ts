@@ -8,8 +8,9 @@ export const mutation = {
       id: string;
       tags: string[];
     };
+    auth: { shop: string; accessToken: string };
   }) => {
-    return getClient()
+    return getClient(input.auth)
       .gql<{
         tagsAdd: {
           node: null | {
@@ -41,8 +42,9 @@ export const mutation = {
       id: string;
       tags: string[];
     };
+    auth: { shop: string; accessToken: string };
   }) => {
-    return getClient()
+    return getClient(input.auth)
       .gql<{
         tagsRemove: {
           node: null | {

@@ -1,3 +1,6 @@
+import type { WebhookSubscription } from "./types/webhook";
+import { getClient } from "../shopifyClients";
+
 const FRAGMENTS = {
   webhookSubscription: /* GraphQL */ `
     fragment WebhookSubscriptionFragment on WebhookSubscription {
@@ -10,7 +13,7 @@ const FRAGMENTS = {
       }
       createdAt
       endpoint {
-        ...on WebhookPubSubEndpoint {
+        ... on WebhookPubSubEndpoint {
           pubSubProject
           pubSubTopic
         }
@@ -22,23 +25,34 @@ const FRAGMENTS = {
 };
 
 export const query = {
-  listRegisteredWebhooks: () => ({
-    query: /* GraphQL */ `
-      query getWebhooks {
-        webhookSubscriptions(first: 100) {
-          nodes {
-            ...WebhookSubscriptionFragment
+  listRegisteredWebhooks: async (input: {
+    // variables?: never
+    auth: { shop: string; accessToken: string };
+  }) => {
+    return getClient(input.auth)
+      .gql<{
+        webhookSubscriptions: {
+          nodes: WebhookSubscription[];
+        };
+      }>({
+        query: /* GraphQL */ `
+          query getWebhooks {
+            webhookSubscriptions(first: 100) {
+              nodes {
+                ...WebhookSubscriptionFragment
+              }
+            }
           }
-        }
-      }
 
-      ${FRAGMENTS.webhookSubscription}
-    `,
-  }),
+          ${FRAGMENTS.webhookSubscription}
+        `,
+      })
+      .then((data) => data.data.webhookSubscriptions.nodes);
+  },
 };
 
 export const mutation = {
-  create: (input: {
+  create: async (input: {
     variables: {
       topic: string;
       input: {
@@ -47,94 +61,73 @@ export const mutation = {
         format: string;
       };
     };
-  }) => ({
-    query: /* GraphQL */ `
-      mutation createWebhook(
-        $topic: WebhookSubscriptionTopic!
-        $input: PubSubWebhookSubscriptionInput!
-      ) {
-        pubSubWebhookSubscriptionCreate(
-          topic: $topic
-          webhookSubscription: $input
-        ) {
-          webhookSubscription {
-            ...WebhookSubscriptionFragment
-          }
-          userErrors {
-            code
-            field
-            message
-          }
-        }
-      }
-
-      ${FRAGMENTS.webhookSubscription}
-    `,
-    variables: input.variables,
-  }),
-
-  delete: (input: { variables: { id: string } }) => ({
-    query: /* GraphQL */ `
-      mutation deleteWebhook($id: ID!) {
-        webhookSubscriptionDelete(id: $id) {
-          deletedWebhookSubscriptionId
-          userErrors {
-            message
-          }
-        }
-      }
-    `,
-    variables: input.variables,
-  }),
-}
-
-type WebhookSubscription = {
-  topic: string;
-  id: string;
-  apiVersion: {
-    displayName: string;
-    handle: string;
-    supported: boolean;
-  };
-  createdAt: string;
-  endpoint: {
-    pubSubProject: string
-    pubSubTopic: string
-    __typename: string;
-  };
-  includeFields: string[];
-};
-
-export type DataType = {
-  get: {
-    webhookSubscriptions: {
-      nodes: WebhookSubscription[];
-    };
-  };
-  create: {
-    pubSubWebhookSubscriptionCreate:
-      | {
+    auth: { shop: string; accessToken: string };
+  }) => {
+    return getClient(input.auth)
+      .gql<{
+        pubSubWebhookSubscriptionCreate: {
           webhookSubscription: WebhookSubscription | null;
-        }
-      | {
-          userErrors: {
+
+          userErrors?: {
             code: string;
             field: string;
             message: string;
           }[];
         };
-  };
+      }>({
+        query: /* GraphQL */ `
+          mutation createWebhook(
+            $topic: WebhookSubscriptionTopic!
+            $input: PubSubWebhookSubscriptionInput!
+          ) {
+            pubSubWebhookSubscriptionCreate(
+              topic: $topic
+              webhookSubscription: $input
+            ) {
+              webhookSubscription {
+                ...WebhookSubscriptionFragment
+              }
+              userErrors {
+                code
+                field
+                message
+              }
+            }
+          }
 
-  delete: {
-    webhookSubscriptionDelete:
-      | {
-          deletedWebhookSubscriptionId: string;
-        }
-      | {
+          ${FRAGMENTS.webhookSubscription}
+        `,
+        variables: input.variables,
+      })
+      .then((data) => data.data.pubSubWebhookSubscriptionCreate);
+  },
+
+  delete: async (input: {
+    variables: { id: string };
+    auth: { shop: string; accessToken: string };
+  }) => {
+    return getClient(input.auth)
+      .gql<{
+        webhookSubscriptionDelete: {
+          deletedWebhookSubscriptionId: null | string;
+
           userErrors: {
             message: string;
           }[];
         };
-  };
+      }>({
+        query: /* GraphQL */ `
+          mutation deleteWebhook($id: ID!) {
+            webhookSubscriptionDelete(id: $id) {
+              deletedWebhookSubscriptionId
+              userErrors {
+                message
+              }
+            }
+          }
+        `,
+        variables: input.variables,
+      })
+      .then((data) => data.data);
+  },
 };
-

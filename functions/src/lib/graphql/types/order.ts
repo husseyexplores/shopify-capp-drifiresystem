@@ -2,6 +2,16 @@ export type Order = {
   id: string;
   name: string;
   tags: string[];
+  displayFulfillmentStatus:
+    | "UNFULFILLED"
+    | "PARTIALLY_FULFILLED"
+    | "FULFILLED"
+    | "RESTOCKED"
+    | "PENDING_FULFILLMENT"
+    | "OPEN"
+    | "IN_PROGRESS"
+    | "ON_HOLD"
+    | "SCHEDULED";
   fulfillable: boolean;
   fullyPaid: boolean;
   paymentTerms: null | PaymentTerms;
