@@ -68,5 +68,5 @@ Webhooks are created via code.
 Documentation to create the webhooks is in `functions/src/handlers/registerWebhooks.ts`
 
 ## Wishlist:
-
+- [ ] Installation process could be reimagined.
 - [ ] Add `delivery@shopify-pubsub-webhooks.iam.gserviceaccount.com` as publisher in GCP via Google API so we don't have to touch the GCP console.
