@@ -203,9 +203,15 @@ export const onRequest: RequestHandler = async function onRequest(
     if (!bodyAccessToken) {
       response.status(400).json({
         error: {
-          title: "Missing required params",
+          title:
+            method === "GET"
+              ? "Shop is not installed."
+              : "Missing required params",
           message:
-            "Shop is not installed. Please install the shop first. Missing `accessToken` (string) in the body.",
+            method === "GET"
+              ? "Please install the shop first."
+              : "Missing `accessToken` (string) in the body.",
+          code: "UNAUTHORIZED",
         },
       });
       return;
@@ -219,6 +225,7 @@ export const onRequest: RequestHandler = async function onRequest(
         error: {
           title: "Unable to fetch shop info.",
           message: "Bad access token",
+          tip: "If you're sure that the access token is 100% correct, then please wait a couple of minutes and then try again.",
         },
         shopInfo,
         auth,
