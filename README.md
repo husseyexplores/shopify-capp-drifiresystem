@@ -70,8 +70,8 @@ Documentation to create the webhooks is in `functions/src/handlers/registerWebho
 ## Wishlist:
 
 - [ ] Installation process could be reimagined.
-      -- On the install page, present a list of features that the app offers
-      -- Merchant can select the features they need and install our app.
-      -- On the backend, we take the list of features that the merchant want to use, and only subscribe the merchant to those webhooks / features.
-      -- Also, there should be a way to list the features merchant is using.
+  - On the install page, present a list of features that the app offers
+  - Merchant can select the features they need and install our app.
+  - On the backend, we take the list of features that the merchant want to use, and only subscribe the merchant to those webhooks / features.
+  - Also, there should be a way to list the features merchant is using.
 - [ ] Add `delivery@shopify-pubsub-webhooks.iam.gserviceaccount.com` as publisher in GCP via Google API so we don't have to touch the GCP console.
