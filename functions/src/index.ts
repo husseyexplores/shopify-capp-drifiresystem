@@ -18,6 +18,7 @@ export const install = onRequest(
   install_.onRequest
 );
 
+// For strikeman-wholesale.myshopify.com
 export const updatePaymentTerms = onMessagePublished(
   {
     topic: "update_payment_terms",
