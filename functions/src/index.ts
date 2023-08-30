@@ -1,6 +1,7 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { onMessagePublished } from "firebase-functions/v2/pubsub";
 import * as logger from "firebase-functions/logger";
+import * as draftOrderShippingUpdate_ from "./handlers/draftOrderShippingUpdate";
 import * as updatePaymentTerms_ from "./handlers/updatePaymentTerms";
 import * as install_ from "./handlers/install";
 import * as debug_ from "./handlers/debug";
@@ -37,9 +38,35 @@ export const updatePaymentTerms = onMessagePublished(
     const auth = { shop, accessToken };
 
     logger.log(
-      `[shop::${shop}] updatePaymentTerms triggered - TOPIC:${json.attributes["X-Shopify-Topic"]}`,
+      `[shop::${shop}] updatePaymentTerms [TRIGGERED] - TOPIC:${json.attributes["X-Shopify-Topic"]}`,
       json
     );
     return updatePaymentTerms_.handler({ payload: data, auth });
+  }
+);
+
+// For drifiresystem.myshopify.com
+export const draftOrderShippingUpdate = onMessagePublished(
+  {
+    topic: "update_rma_draft_order",
+  },
+  async (event) => {
+    const data = event.data.message.json;
+    const json: PubSubToJsonShopify = event?.data?.message?.toJSON();
+    const shop = json?.attributes?.["X-Shopify-Shop-Domain"];
+    if (!shop) return true;
+
+    const shopRef = await C.stores.doc(shop).get();
+    if (!shopRef.exists) return true;
+
+    const accessToken = shopRef.data()?.accessToken;
+    if (typeof accessToken !== "string") return true;
+    const auth = { shop, accessToken };
+
+    logger.log(
+      `[shop::${shop}] draftOrderShippingUpdate [TRIGGERED] - TOPIC:${json.attributes["X-Shopify-Topic"]}`,
+      json
+    );
+    return draftOrderShippingUpdate_.handler({ payload: data, auth });
   }
 );

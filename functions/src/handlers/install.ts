@@ -6,6 +6,11 @@ import type { RequestHandler } from "../types";
 import { C } from "../lib/firebase-admin";
 import { html } from "../lib/html/install";
 
+// /admin/oauth/access_scopes.json
+
+// list of shopify webhook topics:
+// https://shopify.dev/docs/api/admin-graphql/2023-07/enums/WebhookSubscriptionTopic
+
 const AVAILABLE_WEBHOOKS: Parameters<
   (typeof webhookQ)["mutation"]["create"]
 >[0]["variables"][] = [
@@ -14,6 +19,14 @@ const AVAILABLE_WEBHOOKS: Parameters<
     input: {
       pubSubProject: process.env.GCLOUD_PROJECT ?? "drifiresystem-shopify",
       pubSubTopic: "update_payment_terms",
+      format: "JSON",
+    },
+  },
+  {
+    topic: "DRAFT_ORDERS_CREATE",
+    input: {
+      pubSubProject: process.env.GCLOUD_PROJECT ?? "drifiresystem-shopify",
+      pubSubTopic: "update_rma_draft_order",
       format: "JSON",
     },
   },
